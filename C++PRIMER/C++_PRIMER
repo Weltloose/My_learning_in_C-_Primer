@@ -1,0 +1,46 @@
+Chapter 8. The IO Library
+	1. The IO Class
+		!There are two other similar manipulators: flush and ends. flush flushes the stream but adds no characters to the output; ends inserts a null character into the buffer and then flushes it
+		!If we want to flush after every output, we can use the unitbuf manipulator. This manipulator tells the stream to do a flush after every subsequent write. The nounitbuf manipulator restores the stream to use normal, system-managed buffer flushing
+		!When you debug a program that has crashed, it is essential to make sure that any output you think should have been written was actually flushed.
+		!When an fstream object is destroyed, close is called automatically.
+		!ifstream to read from a given file, ofstream to write to a given file. Think about getline.
+		!By default, when we open an ofstream, the contents of the file are discarded. The only way to prevent an ostream from emptying the given file is to specify app
+	3. string Streams
+		usage of istringstream. e.g. istringstream_usage.cpp
+		usage of ostringstream. e.g. ostringstream_usage.cpp
+
+Chapter 9. Sequential Containers
+	1. Overview of the Sequential Containers
+		!Ordinarily, it is best to use vector unless there is a good reason to prefer another container.
+	2. Container Library Overview
+		!When we initialize a container as a copy of another container, the container type and element type of both containers must be identical.
+		!The sequential containers (except array) also define a member named assign that lets us assign from a different but compatible type, or assign from a subsequence of a container.	
+		!!The swap operation exchanges the contents of two containers of the same type.
+	3. Sequential Container Operations
+		!element(s) are inserted before the position denoted by the iterator.
+		!!!!!!!!!!!!!!!use emplace, emplace_front, emplace_back rather than insert, push_front, push_back. e.g. emplace.cpp 
+		!!use of insert in <vector> e.g. insert_vector.cpp 
+		!!If we want to ensure that our index is valid, we can use the at member instead. The at member acts like the subscript operator, but if the index is invalid, at throws an out_of_range exception. e.g. at_vector.cpp
+		!!Because code that adds or removes elements to a container can invalidate iterators, you need to ensure that the iterator is repositioned. e.g. invalidate_iterators.cpp
+	4. How a vector Grows
+	5. Additional string Operations
+		e.g. string_op.cpp
+	6. Container Adaptors
+
+Chapter 10. Generic Algorithms
+	2. A First Look at the Algorithms
+		!Read-Only Algorithms. e.g. read_only_algorithms.cpp
+		!Algorithms That Write Container Elements. e.g. write_container_algorithms.cpp
+		!Algorithms That Reorder Container Elements. e.g. reorder_container_algorithms.cpp
+	3. Customizing Operations
+		!!!!!!Lambda Expressions
+		Functions that do IO typically pass and return the stream through references. Reading or writing an IO object changes its state, so the reference must not be const.
+		!By default, a lambda may not change the value of a variable that it copies by value. If we want to be able to change the value of a captured variable, we must follow the parameter list with the keyword mutable. e.g. mutable.cpp
+		!usage of bind: usage_bind.cpp
+	4. Revisiting Iterators e.g. more_of_iterators.cpp
+	5. Structure of Generic Algorithms
+	6. Container-Specific Algorithms
+
+Chapter 11. Associative Containers
+	1. Using an Associative Container
