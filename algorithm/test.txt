@@ -1,0 +1,1389 @@
+Last updated: March 23, 1999
+Introduction
+The Vis5D API (Application Programmer's Interface) is a division between Vis5D's user interface and its main core. This API allows system developers to include Vis5D as a visualization subsystem of other systems, where the other system invokes the Vis5D core through the API. Thus you can have Vis5D functionality combined with a user interface consistent the rest of your system.
+All Vis5D API functions start with the prefix vis5d_. All API constants start with the prefix VIS5D_.
+
+All Vis5D API functions are of type integer, returning a non-negative value if successful (all but a few return just 0 if successful), otherwise one of these negative error values:
+
+VIS5D_BAD_CONTEXT - invalid context number
+VIS5D_BAD_CONSTANT - invalid VIS5D_* argument
+VIS5D_BAD_MODE - invalid mode argument
+VIS5D_BAD_VALUE - invalid floating point or integer argument
+VIS5D_BAD_VAR_NUMBER - invalid physical variable argument
+VIS5D_BAD_TIME_STEP - invalid timestep argument
+VIS5D_FAIL - the function failed and did not complete
+VIS5D_OUT_OF_MEMORY - function failed because of insufficient memory
+The first argument to all API functions, except the global functions, vis5d_alloc_display_context, and vis5d_alloc_context, is an integer. This integer may either be a display context index or a data context index ranging from 0 and VIS5D_MAX_DPY_CONTEXTS-1 or 0 and VIS5D_MAX_CONTEXTS-1 respectivly.
+Each data context has an independent memory pool.
+
+Physical variable number arguments are always in the range [0,numvars-1] where numvars is the value returned by vis5d_get_numvars(). Similarly, time step arguments are always in the range [0,numvars-1] where numvars is the value returned by vis5d_get_numvars().
+
+There are three coordinate systems used by Vis5D:
+
+grid coordinates - these locate values in the 3-D data grid. Coordinates are in terms of (row, column, level). Rows generally increase from north to south, starting at zero. Columns increase from west to east, starting at zero. Levels increase from bottom to top, starting at zero.
+geographic coordinates - these are (latitude, longitude, altitude) values. Latitudes increase to the north. Longitudes increase to the west. Altitudes (heights) increase upward and zero is sea level.
+graphics coordinates - these are (X, Y, Z) values and are used in Vis5D for drawing 3-D imagery. The center of the 3-D box is at (0,0,0). X increases from west to east, Y increases from south to north, and Z increases from low altitude to high altitude. The extents of (X,Y,Z) coordinates for the box are returned by the vis5d_get_box_bounds() function.
+Outline
+The Vis5D API functions can be catagorized as follows:
+Global Functions:
+Initialization Functions:
+vis5d_initialize
+vis5d_terminate
+vis5d_workers
+Miscellaneous Functions:
+vis5d_do_work
+vis5d_check_work
+vis5d_finish_work
+vis5d_init_window
+Per-context Functions:
+Initialization Functions:
+Primary Initialization Functions:
+vis5d_alloc_data_context
+vis5d_alloc_display_context
+vis5d_destroy_data_context
+vis5d_destroy_display_context
+vis5d_init_begin
+vis5d_init_end
+vis5d_open_gridfile
+Window Functions:
+vis5d_init_sndwindow
+vis5d_init_opengl_window
+Map, Topography and Texture Map Functions:
+vis5d_init_map
+vis5d_init_topo
+vis5d_init_texture
+vis5d_init_firstarea
+vis5d_init_sequence
+Map Projection and Vertical Coordinate System:
+vis5d_init_log
+vis5d_init_box
+vis5d_init_projection
+vis5d_init_vertical
+Miscellaneous Functions:
+vis5d_init_memory
+vis5d_init_path
+vis5d_query_gridfile
+vis5d_get_v5dfilename
+vis5d_init_samescale
+vis5d_init_clock
+Post-Initialization Functions:
+Context Value Functions:
+vis5d_init_display_values
+vis5d_get_context_values
+vis5d_get_dpy_context_values
+vis5d_set_dpy_context_values
+File Functions:
+vis5d_save_to_v5dfile
+vis5d_set_user_data_flag
+vis5d_set_user_flags
+Miscellaneous Display/Data Functions:
+vis5d_assign_display_to_data
+vis5d_make_new_ctx
+vis5d_create_display_context
+vis5d_reset_display_context
+vis5d_get_display_index
+vis5d_get_num_of_ctxs_in_display
+3D-Display/Sound Window Functions:
+vis5d_map_3d_window
+vis5d_unmap_3d_window
+vis5d_get_display_window
+vis5d_map_sndwindow
+Grouping/Linking Functions:
+vis5d_get_num_of_dtxs_in_group
+vis5d_set_display_group
+vis5d_get_display_group
+vis5d_set_grp_var_values
+vis5d_link_slices
+vis5d_unlink_slice
+vis5d_get_slice_link
+vis5d_link_group_graphics
+vis5d_unlink_group_graphics
+vis5d_get_group_graphic_link
+vis5d_create_group_links
+Clipping Functions:
+vis5d_set_hclip
+vis5d_get_hclip
+vis5d_set_vclip
+vis5d_get_vclip
+Time Functions:
+vis5d_get_ctx_numtimes
+vis5d_get_dtx_numtimes
+vis5d_get_grp_numtimes
+vis5d_get_ctx_time_stamp
+vis5d_get_dtx_time_stamp
+vis5d_set_ctx_time_stamp
+vis5d_set_dtx_time_stamp
+vis5d_set_ctx_timestep
+vis5d_set_dtx_timestep
+vis5d_set_grp_timestep
+vis5d_get_ctx_timestep
+vis5d_get_dtx_timestep
+vis5d_get_grp_timestep
+Variable Functions:
+vis5d_get_numvars
+vis5d_find_var
+vis5d_get_var_name
+vis5d_get_var_units
+vis5d_get_var_type
+vis5d_get_var_info
+vis5d_get_var_range
+vis5d_set_var_range
+vis5d_get_sound_vars
+vis5d_set_sound_vars
+vis5d_init_samescale
+vis5d_set_wind_vars
+vis5d_get_wind_vars
+vis5d_set_probe_vars
+Grid Functions:
+vis5d_get_size
+vis5d_get_sizePRIME
+vis5d_get_grid
+vis5d_put_grid
+vis5d_get_grid_value
+vis5d_verylarge_mode
+Map Projection and Vertical Coordinate System Functions:
+vis5d_get_ctx_projection
+vis5d_get_dtx_projection
+vis5d_get_ctx_vertical
+vis5d_get_dtx_vertical
+vis5d_set_dtx_projection
+vis5d_get_curved
+Topography, Map, Box and Texture Functions:
+vis5d_load_topo_and_map
+vis5d_check_topo
+vis5d_check_map
+vis5d_check_texture
+vis5d_get_topo_range
+vis5d_recolor_topo
+vis5d_texture_image
+vis5d_set_topo_color_var
+vis5d_get_topo_color_var
+vis5d_make_box
+vis5d_get_box_bounds
+vis5d_set_topo_base
+vis5d_get_flatmap_level
+vis5d_set_flatmap_level
+Cloning, External Functions, and Expression Functions:
+vis5d_make_clone_variable
+vis5d_compute_ext_func
+vis5d_make_expr_var
+vis5d_make_new_var
+Rendering Functions:
+vis5d_signal_redraw
+vis5d_check_redraw
+vis5d_draw_frame
+vis5d_draw_3d_only
+vis5d_draw_2d_only
+vis5d_draw_sounding_only
+vis5d_swap_frame
+vis5d_invalidate_dtx_frames
+vis5d_set_pointer
+vis5d_graphics_mode
+vis5d_enable_graphics
+vis5d_enable_sfc_graphics
+vis5d_check_volume
+vis5d_set_volume
+vis5d_get_volume
+vis5d_set_color
+vis5d_get_color
+vis5d_set_cursor_color
+vis5d_alpha_mode
+vis5d_font
+vis5d_linewidth
+vis5d_resize_contour_font
+vis5d_gl_setup
+Color Table Functions:
+vis5d_get_color_table_address
+vis5d_get_color_table_params
+vis5d_set_color_table_params
+vis5d_color_table_init_params
+vis5d_color_table_recompute
+vis5d_color_table_set_alpha
+3-D View Functions:
+vis5d_set_matrix
+vis5d_get_matrix
+vis5d_set_view
+vis5d_get_view
+vis5d_set_view_scales
+vis5d_get_view_scales
+vis5d_set_vert_exaggeration
+vis5d_get_vert_exaggeration
+vis5d_set_ortho_view
+vis5d_set_camera
+vis5d_get_camera
+Isosurface, Slice and Trajectory Functions:
+vis5d_make_isosurface
+vis5d_set_isosurface
+vis5d_get_isosurface
+vis5d_set_isosurface_color_var
+vis5d_get_isosurface_color_var
+vis5d_set_hslice
+vis5d_get_hslice
+vis5d_make_vslice
+vis5d_set_vslice
+vis5d_get_vslice
+vis5d_make_chslice
+vis5d_set_chslice
+vis5d_get_chslice
+vis5d_make_cvslice
+vis5d_set_cvslice
+vis5d_get_cvslice
+vis5d_make_hwindslice
+vis5d_set_hwindslice
+vis5d_get_hwindslice
+vis5d_make_vwindslice
+vis5d_set_vwindslice
+vis5d_get_vwindslice
+vis5d_make_hstreamslice
+vis5d_set_hstreamslice
+vis5d_get_hstreamslice
+vis5d_make_vstreamslice
+vis5d_set_vstreamslice
+vis5d_get_vstreamslice
+vis5d_print_traj
+vis5d_make_traj
+vis5d_set_traj
+vis5d_get_traj
+vis5d_set_trajectory_color_var
+vis5d_get_trajectory_color_var
+vis5d_delete_last_traj
+vis5d_delete_traj_set
+vis5d_reset_var_graphics
+vis5d_make_timestep_graphics
+vis5d_free_graphics
+Text Label Functions:
+vis5d_make_label
+vis5d_new_label
+vis5d_edit_label
+vis5d_find_label
+vis5d_move_label
+vis5d_delete_label
+3-D Cursor Functions:
+vis5d_set_cursor
+vis5d_get_cursor
+3-D Color Legend Function:
+vis5d_set_legends
+3-D Viewing Window Functions:
+vis5d_get_window
+vis5d_resize_BIG_window
+vis5d_moveresize_BIG_window
+vis5d_resize_3d_window
+vis5d_moveresize_BIG_window
+vis5d_moveresize_3d_window
+vis5d_resize_sounding_window
+vis5d_get_image_formats
+vis5d_save_window
+vis5d_save_snd_window
+vis5d_print_window
+vis5d_print_snd_window
+Coordinate Conversion Functions:
+vis5d_project
+vis5d_unproject
+vis5d_xyz_to_grid
+vis5d_xyzPRIME_to_gridPRIME
+vis5d_gridPRIME_to_xyzPRIME
+vis5d_gridPRIME_to_grid
+vis5d_grid_to_gridPRIME
+vis5d_grid_to_xyz
+vis5d_xyzPRIME_to_geo
+vis5d_geo_to_xyzPRIME
+vis5d_xyz_to_geo
+vis5d_rowcol_to_latlon
+vis5d_rowcolPRIME_to_latlon
+vis5d_grid_to_geo
+vis5d_gridPRIME_to_geo
+vis5d_latlon_to_rowcol
+vis5d_latlon_to_rowcolPRIME
+vis5d_geo_to_grid
+vis5d_geo_to_gridPRIME
+vis5d_geo_to_xyz
+Miscellaneous Functions:
+vis5d_set_busy_cursor
+Function descriptions
+Global Functions
+int vis5d_initialize( int cavemode )
+This must be the first API function called. It takes one argument which indicates if Vis5D is being used with the CAVE (1=yes, 0=no).
+int vis5d_terminate( int close_window )
+This function should be called just before your application exits. The close_window argument determines whether or not the associated GL windows are destroyed or not. If non-zero, then the windows will be destroyed.
+int vis5d_workers( int nworkers )
+Specifies how many background threads should be created. The nworkers argument should be non-negative (if it is 0, all computations are done in foreground). Background threads compute isosurfaces, contour/colored slices, and wind trajectories. Threads take advantage of multiple CPUs when present.
+int vis5d_do_work( void )
+If the nworkers argument of vis5d_workers() was 0, this function must be called regularly (inside your event loop) to process jobs waiting in the work queue. If the nworkers argument of vis5d_workers() was positive, calling this function is a no-op.
+int vis5d_check_work( int *pending )
+Checks if there are background jobs waiting in the work queue. A value of 1 will be returned in pending if jobs are pending, or 0 will be returned in pending if the queue is empty.
+int vis5d_finish_work( void )
+This function blocks and returns when there are no more background jobs pending.
+int vis5d_init_window( char *title, int x, int y, int width, int height )
+Create the main window. This window is parent to one or more of the 3-D graphics windows.
+Per-Context Functions
+A context is initialized with the functions in this section. There are three types of contexts, a data context (ctx), a display context (dtx) and a group context (grp). A data context contains the 5-D data, information about the data grid such as the projection and vertical coordinate system, and many static attributes which are specific to that data such as the number of variables and the time stamps. A display context is attached to one or more data contexts. It contains the 3-D display window and describes a virtual grid which governs how data is displayed. If the virtual grid is different from the data grid the appropriate transformations are applied. The group context will exist when two or more display contexts are linked together. It contains information about the displays such as a chronological list of timesteps needed to animate all the data. The first initialization call must be to vis5d_init_begin() and the last initialization call must be to vis5d_init_end(). In between, you may call any other vis5d_init_* function. You'll usually call a vis5d_init_*_window() function and you MUST also call vis5d_open_gridfile(), and vis5d_init_display_values. For example:
+     c = vis5d_alloc_data_context();
+     d = vis5d_alloc_display_context();
+     vis5d_init_window( c, ... );
+     vis5d_init_begin( c, d );
+     vis5d_init_...
+     vis5d_open_gridfile( c, "LAMPS.v5d", 0 );
+     vis5d_init_display_values( c, d );
+     vis5d_init_end( c );
+int vis5d_alloc_data_context( void )
+Allocate a new data context( ctx ) and return its integer index or VIS5D_FAIL if no more contexts can be allocated. This function is not required; contexts are identified by small integers and an applications may simply allocate/manage these small integers itself.
+int vis5d_alloc_display_context( void)
+Allocate a new display context( dtx ) and return its integer index or VIS5D_FAIL if no more contexts can be allocated. This function is not required; contexts are identified by small integers and an applications may simply allocate/manage these small integers itself.
+int vis5d_destroy_data_context( int ctx_index )
+Destroy a data context.
+int vis5d_destroy_display_context( int dtx_index )
+Destroy a display context.
+int vis5d_init_begin( int ctx_index, int dtx_index )
+Begin initialization of data context number 'ctx_index', and begin initialization of display context number 'dtx_index'. The dtx is automatically assigned to the ctx.
+int vis5d_init_end( int ctx_index )
+This function is to be called after all other initializations functions. At this time, Vis5D will take the information provided by the other init functions and actually construct the context.
+int vis5d_open_gridfile( int ctx_index, char *name, read_flag )
+Specify the file name of the Vis5D dataset to visualize. read_flag indicates whether or not data should immediately be read from the file (1) or if data should be read as needed later (0).
+This function is unique among the initialization functions in that it may also be called after vis5d_init_end (any number of times), causing the current dataset to be discarded and replaced by the new one specified.
+
+int vis5d_init_memory( int ctx_index, int mbs )
+Specify the size of memory (the mbs argument has the number of megabytes) pool to allocate for the context.
+int vis5d_init_sndwindow( int dtx_index, char *title, int x, int y, int width, int height, Window scw, char *wdpy_name )
+Create a 2-D graphics window for the given display context, in which the vertical plots and skew-t's will be drawn. The arguments are the window title string, the window position, size (in pixels), the scw (either the parent sounding control window or 0), and wdpy_name, the name of an alternete display on which to show the GUI widgets..
+int vis5d_init_samescale( int dtx_index)
+This will normalize the scale to which the 3 vertical plot variables will be drawn to.
+int vis5d_init_opengl_window( int dtx_index, Display *dpy, Window window, GLXContext ctx )
+Attach an OpenGL window to a display context. The window argument is the X window identifier and ctx is the GLX context identifier.
+int vis5d_init_log( int dtx_index, float scale, float exponent)
+Specify the coefficients relating altitude to presure when using a logrithmic vertical coordinate system.
+int vis5d_init_box( int dtx_index, float alon, float alat, float ahgt )
+Specify the aspect ratio of the 3-D box. The ratio of lengths along the longitude, latitude and height axes is specified by alon:alat:ahgt.
+int vis5d_init_path( int dtx_index, char *pathname )
+Specify the directory to search for topograph (*.TOPO) and map outline (OUTL*) files. The current directory is the default.
+int vis5d_query_gridfile( char *name, v5dstruct *v );
+Open the named vis5d file, read it's header info, then close the file. This does not consume a vis5d context in the process.
+int vis5d_get_v5dfilename( int ctx_index, char *name)
+Return the file name for the given vis5d context.
+int vis5d_init_clock( int dtx_index, int flag )
+Specify if a circle should be drawn around the clock. If flag is 0 then no circle, if flag is 1 then the circle is drawn.
+int vis5d_init_map( int dtx_index, char *mapname )
+Specify the file name of the map outline file to use. If this is not called, the system will try to use default US or world map outline files, depending on map extents.
+int vis5d_init_topo( int dtx_index, char *toponame, int highres_flag )
+Specify the file name of the topography file to use and whether it should be displayed in low or high resolution (highres_flag=0 means low resolution, 1 means high resolution). If this is not called, no topography will be used.
+int vis5d_init_texture( int dtx_index, char *texturename )
+Specify the file name of an image to texture map over the topography.
+int vis5d_init_firstarea( int dtx_index, int area )
+Specify the file number of the first of a consecutive sequence of McIDAS area files to texture map over the topography.
+int vis5d_init_sequence( int dtx_index, char *sequencename )
+Specify the name of a raw image sequence file to texture map over the topography.
+int vis5d_init_projection( int dtx_index, int projection, float *projargs )
+Specify a map projection to override the one found in the Vis5D datafile.
+projection - a map projection identifier such as PROJ_GENERIC, PROJ_LINEAR, PROJ_LAMBERT, etc. as seen in api.h
+projargs - an optional array of projection parameters. If NULL, the user will be prompted to enter values. See the main README file for more details about map projection parameters
+int vis5d_init_vertical( int dtx_index, int vertical, float *vertargs )
+Specify a vertical coordinate system to override the one found in the Vis5D datafile.
+vertical - a vertical coordinate system identifier such as VERT_GENERIC, VERT_EQUAL_KM, VERT_NONEQUAL_KM as seen in api.h
+vertargs - an optional array of vertical coordinate system parameters. If NULL, the user will be prompted to enter values.
+Post-Initialization Context Functions
+After a Vis5D context has been initialized you may query the v5d file's attributes and control the actual Vis5D visualization operations with these functions.
+Context Value Functions
+int vis5d_init_display_values( int ctx_index, int dtx_index )
+This sets the display context values(numlevels, map projection, vertical coordinate system etc...), given by the 'dtx_index', to that of the data context values, given by the 'ctx_index'.
+int vis5d_get_ctx_values( int ctx_index, v5dstruct *v5d)
+This returns the data context values in the form of a v5dstruct.
+int vis5d_get_dtx_values( int dtx_index, v5dstruct *v5d)
+This returns the display context values in the form of a v5dstruct.
+int vis5d_set_dtx_values( int dtx_index, v5dstruct *v5d)
+This sets the display context values given by the v5dstruct.
+File Functions
+int vis5d_save_to_v5dfile( int ctx_index, char *filename)
+This will save a data set which is loaded to a v5d file. This is useful when new variables have been created.
+int vis5d_set_user_data_flag( int ctx_index, int flag)
+Set the flag to indicate that user-provided functions are to be used to read gridded data. If flag is 1 then implement the user-provided functions, if flag is 0 use default loading of v5d files.
+int vis5d_set_user_flags (int dtx_index, int topo_flag, int map_flag)
+Set flags to indicate that user-provided functions are to be used to read map and/or topography data. If flag is 1 then implement the user-provided functions, if flag is 0 use default loading of files.
+Miscellaneous Display/Data Functions
+int vis5d_assign_display_to_data( int ctx_index, int dtx_index )
+A data context must always be attatched to a display context. This attaches the data context, given by 'ctx_index', to the display context, given by 'dtx_index'.
+int vis5d_make_new_ctx( int dtx_index, int mbs, char *filename, char *ctxname )
+This fuctions loads the file, given by 'filename', and names it 'ctxname'. It then attaches it to the display context, given by 'dtx_index'. If the display context does not exist, one will be created.
+int vis5d_create_display_context( int dtx_index )
+Create a display context given by 'dtx_index' and set to default values. If the display context already exists, do nothing.
+int vis5d_reset_display_context( int dtx_index )
+Set display context values to default values.
+int vis5d_get_display_index(int ctx_index, int *dtx_index )
+Return the display context index attached to the data context.
+int vis5d_get_num_of_ctxs_in_display( int dtx_index, int *number, int numarray[])
+Return the number of data contexts attached to the display. The 'numarray' is of size [0..*number-1] and contains a list of the indicies associated with each data context.
+3D-Display/Sound Window Functions
+int vis5d_map_3d_window( int dtx_index )
+Map to the screen, the 3D display window associated with the display context.
+int vis5d_unmap_3d_window( int dtx_index )
+Unmap from the screen, the 3D display window associated with the display context.
+int vis5d_get_display_window( int dtx_index, Window *win)
+Return the ID for the 3D display window associated with the display context.
+int vis5d_map_sndwindow( int dtx_index)
+Map the sounding window to the graphics display.
+int vis5d_unmap_sndwindow( int dtx_index)
+Unmap the sounding window to the graphics display.
+Grouping/Linking Functions
+int vis5d_get_num_of_dtxs_in_group( int grp_index, int *number, int numarray[])
+Return the number of display contexts attached to the group context.
+*number - the number of display contexts
+numarray[] - the range is [0..*number-1] and contains a list of indicies associated with each display context.
+int vis5d_set_display_group( int dtx_index, int grp_index )
+This will attach the display context to the group context.
+int vis5d_get_display_group( int dtx_index, int *grp_index )
+This will return the index of a group context which may be attached to a display context. If the display is not linked to a group then -1 will be returned.
+dtx_index - the display context index
+*grp_index - the returned value of the group context index.
+int vis5d_set_grp_var_values( int grp_index )
+Check all the displays attached to this group for similar named variables. Create new Max and Min values which are the same for all duplicate variables.
+vis5d_link_slices( int ctx_index1, int type1, int var1, ctx_index2, int type2, int var2)
+This will link two slices together including any links to other slices. The movement and state of the linked slices will then be synchronized. Horizontal and vertical slices can not be linked.
+ctx_index1 - the data set which slice 1 belongs to
+type1 - one of
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+var1 - the variable number or wind slice number
+ctx_index2 - the data set which slice 2 belongs to
+type2 - one of
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+var2 - the variable number or wind slice number
+vis5d_unlink_slice( int ctx_index, int type, int var)
+This removes the slice from a chain of linked slices.
+ctx_index - the data set which slice belongs to
+type - one of
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+var - the variable number or wind slice number
+int vis5d_get_slice_link( int ctx_index, int type, int var, int **next_ctx_index, int **next_ctx_type, int **next_var)
+This returns the next slice in the linked chain of slices. It returns 1 if the slice is linked and 0 if the slice is not linked.
+ctx_index - the data set which the slice belongs to
+type - one of
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+var - the variable number or wind slice number
+next_ctx_index - the data set which the next slice belongs to
+next_type - one of
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+next_var - the next variable number or wind slice number
+int vis5d_link_group_graphics( int ctx_index1, int type1, int var1, int ctx_index2, int type2, int var2)
+This will link two graphics together. This linked list of graphics is used when two or more displays are grouped together. The state of these graphics and the movement of slices will then be synchronized.
+ctx_index1 - the data set which graphic 1 belongs to
+type1 - one of
+VIS5D_ISOSURF
+VIS5D_VOLUME
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+var1 - the variable number or wind slice number
+ctx_index2 - the data set which graphic 2 belongs to
+type2 - one of
+VIS5D_ISOSURF
+VIS5D_VOLUME
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+var2 - the variable number or wind slice number
+int vis5d_unlink_group_graphics( int ctx_index, int type, int var)
+This removes a graphic from the linked list of graphics which is used when displays are grouped
+ctx_index - the data set the graphic belongs to
+type - one of
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+var - the variable number or wind slice number
+int vis5d_get_group_graphic_link( int ctx_index, int type, int var, int **next_ctx_index, int **next_type, int **next_var)
+This returns the next graphic in the linked chain of graphics. It returns 1 if the graphic is linked and 0 if the graphic is not linked.
+ctx_index - the data set which the graphic belongs to
+type - one of
+VIS5D_ISOSURF
+VIS5D_VOLUME
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+var - the variable number or wind slice number
+next_ctx_index - the data set which the next graphic belongs to
+next_type - one of
+VIS5D_ISOSURF
+VIS5D_VOLUME
+VIS5D_HSLICE
+VIS5D_CHSLICE
+VIS5D_VSLICE
+VIS5D_CVSLICE
+VIS5D_HWIND
+VIS5D_HSTREAM
+VIS5D_VWIND
+VIS5D_VSTREAM
+next_var - the next variable number or wind slice number
+int vis5d_create_group_links( int grp_index )
+This function will create the standard links between the data sets belonging to the specified display group. This function should be called after a display is added or removed from a display group. Variables with the same name but different displays will be linked and existing slice links will be merged for all the displays.
+grp_index - the display group index
+Clipping Functions
+int vis5d_set_hclip( int dtx_index, int num, float level)
+Set the horizontal clipping plane, given by 'num' to the desired 'level'. There are two horizontal clipping planes. Clipping plane 0 is by default set to the maximum number of levels. Clipping plane number 1 is by default set to level zero.
+num - number of the horz. clipping plane [0..1].
+level - the desired level of the horz. clipping plane.
+int vis5d_get_hclip( int dtx_index, int num, float *level)
+Return the level at which a horizontal clipping plane is located at.
+num - number of the horz. clipping plane [0..1].
+*level - returns the level at which the horz. clipping plane is at.
+int vis5d_set_vclip( int dtx_index, int num, float r1, float c1, float r2, float c2 )
+Set the current location of a vertical clipping plane. There are 4 vertical clipping planes. Clipping plane 0, 1, 2, 3 are by default set to the north, south, west, and east side of the grid box respectively.
+num - number of the vert. clipping plane [0..3]
+r1, c1 - grid row and column position of left side of plane.
+r2, c2 - grid row and column position of right side of plane.
+int vis5d_get_vclip( int dtx_index, int num, float *r1, float *c1, float *r2,float *c2)
+Return the current location of a vertical clipping plane.
+num - the number of the vert. clipping plane [0..3]
+r0, c0 - returns grid row and column position of the left side of plane.
+r1, c1 - returns grid row and column position of the right side of plane.
+Time Functions
+int vis5d_get_ctx_numtimes( int ctx_index, int *numtimes )
+Returns the number of time steps in numtimes for the data context.
+int vis5d_get_dtx_numtimes( int dtx_index, int *numtimes )
+Returns the number of time steps in numtimes for the display context.
+int vis5d_get_grp_numtimes( int grp_index, int *numtimes )
+Returns the number of time steps in numtimes for the group context.
+int vis5d_get_ctx_time_stamp( int ctx_index, int timestep, int *day, int *time )
+Returns the real world time and date associated with a timestep for the data context.
+timestep - the time step in [0,numtimes-1]
+day - date of the timestep in days since 1/1/1900
+time - time of the timestep in seconds since midnight
+int vis5d_get_dtx_time_stamp( int dtx_index, int timestep, int *day, int *time )
+Returns the real world time and date associated with a timestep for the display context.
+timestep - the time step in [0,numtimes-1]
+day - date of the timestep in days since 1/1/1900
+time - time of the timestep in seconds since midnight
+int vis5d_set_ctx_time_stamp( int ctx_index, int timestep, int day, int time )
+Set the real world time and date to associate with a timestep in a data context.
+timestep - the time step in [0,numtimes-1]
+day - date of the timestep in days since 1/1/1900
+time - time of the timestep in seconds since midnight
+int vis5d_set_dtx_time_stamp( int dtx_index, int timestep, int day, int time )
+Set the real world time and date to associate with a timestep in a display context.
+timestep - the time step in [0,numtimes-1]
+day - date of the timestep in days since 1/1/1900
+time - time of the timestep in seconds since midnight
+int vis5d_set_ctx_timestep( int ctx_index, int step_number )
+Set the current data context timestep. step_number is an integer in [0,numtimes-1].
+int vis5d_set_dtx_timestep( int dtx_index, int step_number )
+Set the current display context timestep. step_number is an integer in [0,numtimes-1].
+int vis5d_set_grp_timestep( int grp_index, int step_number )
+Set the current group context timestep. step_number is an integer in [0,numtimes-1].
+int vis5d_get_ctx_timestep( int ctx_index, int *step_number )
+Return the current data context timestep number in step_number, which will be in [0,numtimes-1].
+int vis5d_get_dtx_timestep( int dtx_index, int *step_number )
+Return the current display context timestep number in step_number, which will be in [0,numtimes-1].
+int vis5d_get_grp_timestep( int grp_index, int *step_number )
+Return the current group context timestep number in step_number, which will be in [0,numtimes-1].
+Physical Variable Functions
+int vis5d_get_numvars( int ctx_index, int *numvars )
+Returns the number of physical variables in numvars.
+int vis5d_find_var( int ctx_index, char *name )
+Return the number of the variable indicated by name. This is a convenience function which could otherwise be done with vis5d_get_numvars(), vis5d_get_var_name(), and strcmp().
+name - the name of variable to look up
+return the variable number or VIS5D_FAIL if name is not found
+int vis5d_get_var_name( int ctx_index, int var, char *name )
+Returns the name of a variable.
+var - number of the variable in [0,numvars-1]
+name - the name of variable
+int vis5d_get_var_units( int ctx_index, int var, int *type )
+Returns the physical units of variable number var. For example, the units for "U" are usually "m/s" (meters per second).
+vis5d_get_var_info( int ctx_index, int var, void *info )
+Return extra information about variable number var.
+If the variable is a clone, info returns the integer number of variable which it clones.
+If the variable is an external function, info returns a string which is the function's filename.
+If the variable is an expression, info returns a string which is the functions's expression.
+int vis5d_get_var_range( int ctx_index, int var, float *min, float *max )
+Returns the minimum and maximum values of the specified variable.
+var - the variable number in [0,numvars-1]
+min - returns the minimum value
+max - returns the maximum value
+int vis5d_set_var_range( int ctx_index, int var, float min, float max )
+Set minimum and maximum values of the specified variable.
+var - the variable number in [0,numvars-1]
+min - the minimum value
+max - the maximum value
+Note: the minimum and maximum may specify any range
+int vis5d_get_sound_vars( int index, int *tempowner, int *temp, int *dewptowner, int *dewpt, int *uwindowner, int *uwind, int *vwindowner, int *vwind, int *var1owner, int *var1, int *var2owner, int *var2, int *var3owner, int *var3 )
+Return the number and data context index owner of the specified variables.
+tempowner - data context index owner
+temp - the variable for the temperature plotted on the skew-t
+dewptowner - data context index owner
+dewpt - the variable for the dew point temperature plotted on the skew-t
+uwindowner - data context index owner
+uwind - the U component of the wind for the wind barb plots
+vwindowner - data context index owner
+vwind - the V component of the wind for the wind barb plots
+var1owner, var2owner, var3owner - data context index owners
+var1, var2, var3 - vertical plot variables
+int vis5d_set_sound_vars( int dtx_index, int tempowner, int temp, int dewptowner, int dewpt, int uwindowner, int uwind, int vwindowner, int vwind, int var1owner, int var1, int var2owner, int var2, int var3owner, int var3 )
+Specify the variables to use in the sounding window.
+tempowner - data context index owner
+temp - the variable for the temperature plotted on the skew-t
+dewptowner - data context index owner
+dewpt - the variable for the dew point temperature plotted on the skew-t
+uwindowner - data context index owner
+uwind - the U component of the wind for the wind barb plots
+vwindowner - data context index owner
+vwind - the V component of the wind for the wind barb plots
+var1owner, var2owner, var3owner - data context index owners
+var1, var2, var3 - vertical plot variables
+int vis5d_set_wind_vars( int dtx_index, int u1varowner, int u1, int v1varowner, int v1, int w1varowner, int w1, int u2varowner, int u2, int v2varowner, int v2, int w2varowner, int w2, int utrajowner, int utraj, int vtrajowner, int vtraj, int wtrajowner, int wtraj )
+Specify the variables to use for the U, V, W components of wind slices and trajectories.
+u1owner, v1owner, w1owner - data context index owners( must be the same )
+u1, v1, w1 - variables for first wind slice set
+u2owner, v2owner, w2owner - data context index owners( must be the same )
+u2, v2, w2 - variables for second wind slice set
+utrajowner,vtrajowner,wtrajowner - data context index owners( must be the same )
+utraj, vtraj, wtraj - variables used for tracing trajectories
+int vis5d_get_wind_vars( int dtx_index, int *u1varowner, int *u1, int *v1varowner, int *v1, int *w1varowner, int *w1, int *u2varowner, int *u2, int *v2varowner, int *v2, int *w2varowner, int *w2, int *utrajowner, int *utraj, int *vtrajowner, int *vtraj, int *wtrajowner, int *wtraj )
+Return the number of the variables which correspond to the U, V, and W components of wind vectors.
+u1owner, v1owner, w1owner - data context index owners( must be the same )
+u1, v1, w1 - returns variables for first wind slice set
+u2owner, v2owner, w2owner - data context index owners( must be the same )
+u2, v2, w2 - returns variables for second wind slice set
+utrajowner,vtrajowner,wtrajowner - data context index owners( must be the same )
+utraj, vtraj, wtraj - returns variables used for tracing trajectories
+int vis5d_set_probe_vars( int ctx_index, int numvars, int *varlist)
+This controls which variables to display when using the probe.
+numvars - number of variables, -1 for all variables, 0 for no variables
+varlist - list of variable numbers, NULL with numvars = -1 or numvars = 0
+3-D Grid Functions
+int vis5d_get_size( int ctx_index, int *nr, int *nc, int nl[], int *maxnl, int *maxnlvar, int *windnl, int *windlow )
+Returns information about the size of the data grids defined by the data context:
+nr - number of grid rows
+nc - number of grid columns
+nl - array of grid levels, one per variable
+maxnl - maximum of nl values
+maxnlvar - which variable corresponds to maxnl
+windnl - highest grid level with all wind variables
+windlow - lowest grid level with all wind variables
+Note that these arguments are pointers. NULL pointers are legal (useful for when you don't care to get all the attributes.)
+int vis5d_get_sizePRIME( int dtx_index, int *nr, int *nc, int *nl, int *maxnl, int *maxnlvar, int *windnl, int *windlow )
+Returns information about the size of the virtual grids defined by the display context:
+nr - number of grid rows
+nc - number of grid columns
+nl - number of grid levels
+maxnl - maximum of nl values
+windnl - highest grid level with all wind variables
+windlow - lowest grid level with all wind variables
+Note that these arguments are pointers. NULL pointers are legal (useful for when you don't care to get all the attributes.)
+int vis5d_get_grid( int ctx_index, int time, int var, float *grid )
+Get a 3-D data grid.
+time - which timestep in [0,numtimes-1]
+var - which variable in [0,numvars-1]
+grid - address to store grid values
+int vis5d_put_grid( int ctx_index, int time, int var, float *grid )
+Write a 3-D data grid.
+time - which timestep in [0,numtimes-1]
+var - which variable in [0,numvars-1]
+grid - array of data to put into grid
+int vis5d_get_grid_value( int ctx_index, int var, float row, float column, float level, float *value )
+Get a single grid value at current time step. If the row, column and level parameters are not integers then the grid value will be computed as a weighted average of the 8 nearest neighbors.
+var - which variable
+row - the row in [0,Nr-1]
+column - the column in [0,Nc-1]
+level - the level in [0,Nl-1]
+value - the returned grid value
+int vis5d_verylarge_mode( int index, int mode )
+The "VeryLarge" option is useful for visualizing files which are much larger than your system's RAM would normally accomodate. When VeryLarge mode is enabled, graphics are only computed when needed (i.e. whenever the current timestep is changed) and not automatically computed for all timesteps.
+mode - one of
+VIS5D_OFF = turn off
+VIS5D_ON = turn on
+VIS5D_TOGGLE = toggle state
+VIS5D_GET = return current state
+Return current state of the VeryLarge option.
+Map Projection and Vertical Coordinate System Functions:
+int vis5d_get_ctx_projection( int ctx_index, int *projection, float projargs[] )
+Return the parameters which describe the current data context map projection.
+projection - the projection system ID number
+projargs - the parameters which describe the system, the number of parameters may vary
+int vis5d_get_dtx_projection( int dtx_index, int *projection, float projargs[] )
+Return the parameters which describe the current display context map projection.
+projection - the projection system ID number
+projargs - the parameters which describe the system, the number of parameters may vary
+int vis5d_get_ctx_vertical( int ctx_index, int *vertical, float vertargs[] )
+Return the parameters which describe the current data context vertical coordinate system.
+vertical - the vertical coordinate system ID number
+vertargs - the parameters which describe the system, number of parameters may vary
+int vis5d_get_dtx_vertical( int dtx_index, int *vertical, float vertargs[] )
+Return the parameters which describe the current display context vertical coordinate system.
+vertical - the vertical coordinate system ID number
+vertargs - the parameters which describe the system, number of parameters may vary
+int vis5d_set_dtx_projection( int dtx_index, int what, int type, float towhat)
+Set the parameters which describe the current display context map projection and vertical coordinate system.
+what - one of: SET_PROJ_Projection, SET_PROJ_NorthBound, SET_PROJ_WestBound, SET_PROJ_RowInc, SET_PROJ_ColInc SET_PROJ_Lat1, SET_PROJ_Lat2, SET_PROJ_PoleRow, SET_PROJ_PoleCol, SET_PROJ_CentralLat, SET_PROJ_CentralLon, SET_PROJ_CentralRow, SET_PROJ_CentralCol, SET_PROJ_Rotation, SET_PROJ_CylinderScale, SET_PROJ_VerticalSystem, SET_PROJ_LevInc, SET_PROJ_BottomBound, SET_PROJ_Height, SET_PROJ_NumRows, SET_PROJ_NumCols, SET_PROJ_NumLevs, SET_PROJ_Done.
+type - this is an index into the Height array. (when SET_PROJ_Height is used )
+towhat - the desired value for the SET_PROJ_*.
+**** NOTE ****
+A SET_PROJ_Done must be called after setting the desired arguments
+or many changes will have no effect.
+int vis5d_get_curved( int dtx_index, int *curved )
+Return whether or not the 3-D box will really be a box (curved=0) or the box is actually a curved shape (curved=1).
+Topography, Map and Texture Functions
+int vis5d_check_topo( int dtx_index, int *topoflag )
+Return a flag indicating whether or not there is a topography to display.
+int vis5d_check_map( int dtx_index, int *mapflag )
+Return a flag indicating whether or not there is a map to display.
+int vis5d_check_texture( int dtx_index, int *textureflag )
+Return a flag indicating whether or not there are texture map(s) (images mapped onto the topography) to display.
+int vis5d_get_topo_range( int dtx_index, float *min, float *max )
+Returns the minimum and maximum topography heights (in KM) in the domain.
+int vis5d_reset_topo_colors( int dtx_index )
+Reset the topography colors to the default colors.
+int vis5d_texture_image( int dtx_index, int timestep, int width, int height, int components, void *image )
+Define a texture map to render over the topograpy. A different image can be specified for each timestep.
+index - the display context number
+timestep - which timestep
+width - width of texture image in pixels
+height - height of texture image in pixels
+components - how many color components per pixel: 1=grayscale, 3=RGB
+image - the 2-D array of pixels
+int vis5d_set_topo_color_var( int dtx_index, int colorvarowner, int colorvar )
+Specifies that the topography should be colored according to one of the physical variables. If colorvar is negative (the default) then the topography is colored according to height. colorvar specifies which data context the variable belongs to.
+int vis5d_get_topo_color_var( int dtx_index, int *colorvarowner, int *colorvar )
+Returns the number of the variable and the variable owner which is being used to color the topography. If the topography is being colored by height then -1 is returned.
+int vis5d_make_box( int dtx_index, float x, float y, float z)
+Make the graphics box given the aspect ratios x, y and z
+int vis5d_get_box_bounds( int index, float *xmin, float *xmax, float *ymin, float *ymax, float *zmin, float *zmax )
+Returns the extents of the 3-D box in graphics coordinates.
+int vis5d_set_topo_base( int dtx_index, int state, float level)
+This will set the level at which the topography base extends below ground.
+state - 1 enable topo base, 0 disable topo base(defualt = 0)
+level - grid level [0..Nl-1]
+int vis5d_set_flatmap_level( int dtx_index, float level)
+This will set the level where the (non-surface) map is located.
+level - grid level [0..Nl-1]
+int vis5d_get_flatmap_level( int dtx_index, float *level)
+Returns the current grid level position of the flat map.
+Clones, External Functions, and Expression Functions
+int vis5d_make_clone_variable( int ctx_index, int var_to_clone, char *newname, int *newvar )
+Clone a physical variable.
+var_to_clone - the number of the variable to clone
+newname - the name to give to the clone variable.
+newvar - returns the number of the new variable.
+VIS5D_FAIL will be returned if newname is already in use.
+int vis5d_compute_ext_func( int dtx_index, char *funcname, int *newvar )
+Call a user-written, external Fortran function to compute a new variable.
+name - the Unix path/filename of the function to compute
+newvar - returns the number of the new variable.
+The name of the new variable will be the Unix path/filename without the optional, leading directory path (/usr/foo/ etc).
+
+If the function has been called before, the results of executing the function will replace the values of the previous computation and no new variable will be created.
+
+int vis5d_make_expr_var( int dtx_index, char *expression, char *newname, int *newvar, int *recompute, char *mess)
+Compute a new variable from an expression in terms of existing variables.
+expression - the expression to evaluate
+newname - name of variable which is the result of the expression
+newvar - returns the number of the new variable
+recompute - returns whether this variable was just recomputed
+mess - returns an error message in case of error
+If the target variable of the function already exists, the results of evaluating the expression will replace the values of the previous computation and no new variable will be created.
+int vis5d_make_new_var( int ctx_index, char *newname, int nl, int lowlev, int *newvar )
+Create a new variable initially filled with MISSING codes, to be filled in by calls to vis5d_put_grid.
+newname - name of variable which is the result of the expression
+nl - number of vertical levels for variable
+lowlev - lowest vertical level for variable
+newvar - returns the number of the new variable
+Rendering Functions
+int vis5d_signal_redraw( int dtx_index, int count )
+Sets the redraw flag to count. When the API user wants the 3-D image redrawn this function should be called. Vis5D core functions may also set this flag.
+int vis5d_check_redraw( int dtx_index, int *redraw )
+Check if a redraw is pending. This returns the value set by vis5d_signal_redraw(). If it's non-zero the user program should call vis5d_draw_frame soon.
+int vis5d_draw_frame( int dtx_index, int animflag )
+Redraw the 3-D image. Then clear the redraw flag. Note that the new image will not be displayed until vis5d_swap_frame is called.
+animflag - used to specify if animation is currently taking place
+int vis5d_draw_3d_only( int dtx_index, int animflag )
+Draw only the 3-D elements of a Vis5D scene. No graphics library operations such as window clearing or matrix transformations are done.
+animflag - indicates if animation is currently enabled. This controls whether contour slice numbers are displayed.
+int vis5d_draw_2d_only( int dtx_index )
+Draw only the 2-D elements of a Vis5D scene. No graphics library operations such as window clearing or matrix transformations are done.
+int vis5d_draw_sounding_only( int dtx_index, int redraw_background )
+Draw only the elements in the sounding window.
+redraw_background - flag set to 1 indicates need to redraw the background graphics such as theta lines, w lines, ticks, etc in case of Sounding window resize or toggling graphics enable.
+int vis5d_swap_frame( int dtx_index, int animflag )
+Display the most recently drawn frame. This call usually follows vis5d_draw_frame.
+int vis5d_invalidate_dtx_frames( int dtx_index )
+Tells Vis5D to invalidate and discard any cached 3-D images.
+int vis5d_set_pointer( int dtx_index, int x, int y )
+Draw an arrow pointer in the 3-D graphics window at position (x,y) where (0,0) is the upper-left corner of the window. If (x,y) equals (-1,-1), the default, then no pointer will be drawn. This function is useful when the 3-D graphics window is on a different display than the GUI.
+int vis5d_graphics_mode( int dtx_index, int type, int mode )
+Specify miscellaneous graphics state.
+type - one of
+VIS5D_BOX = display the 3-D box
+VIS5D_CLOCK = display the clock
+VIS5D_CLIP = display the clipping plane slices
+VIS5D_MAP = display map lines
+VIS5D_TOPO = display topography
+VIS5D_LEGENDS = display color legends
+VIS5D_PERSPECTIVE = render in perspective
+VIS5D_CONTOUR_NUMBERS = display contour slice numbers
+VIS5D_GRID_COORDS = display grid coordinates instead of geographic coordinates
+VIS5D_PRETTY = use slow, high-quality rendering
+VIS5D_REVERSE = reverse black/white in the image
+VIS5D_INFO = display memory/work information
+VIS5D_PROBE = display the data probe
+VIS5D_CURSOR = display the 3-D cursor
+VIS5D_ANIMRECORD = enable stored frame animation
+VIS5D_BARBS = use wind barbs rather than arrows
+VIS5D_JULIAN = use yyddd rather than dd month yy in clock
+VIS5D_SND_THTA = display theta lines in Sounding window
+VIS5D_SND_THTE = display theta-e lines in Sounding window
+VIS5D_SND_W = display constant mixing ratio (w) lines in Sounding window
+VIS5D_SND_TICKS = display horz. & vert. tick lines in Sounding window
+mode - one of
+VIS5D_OFF = turn off
+VIS5D_ON = turn on
+VIS5D_TOGGLE = toggle state
+VIS5D_GET = return current state
+Note, the return value is the current mode, not a VIS5D_ error value.
+int vis5d_enable_graphics( int dtx_index, int type, int number, int mode )
+Specify which graphical elements are to be displayed.
+type - one of
+VIS5D_ISOSURF = isosurface
+VIS5D_HSLICE = horizontal contour slice
+VIS5D_VSLICE = vertical contour slice
+VIS5D_CHSLICE = horizontal color slice
+VIS5D_CVSLICE = vertical color slice
+VIS5D_VOLUME = volume rendering
+VIS5D_TRAJ = trajectory set
+VIS5D_HWIND = horizontal wind slice
+VIS5D_VWIND = vertical wind slice
+VIS5D_HSTREAM = horizontal streamline slice
+VIS5D_VSTREAM = vertical streamline slice
+number -
+variable number, if type = VIS5D_ISOSURF, VIS5D_HSLICE, VIS5D_VSLICE, VIS5D_CHSLICE, VIS5D_CVSLICE or VIS5D_VOLUME
+trajectory set number, if type = VIS5D_TRAJ
+slice number, if type = VIS5D_HWIND, VIS5D_VWIND, VIS5D_HSTREAM of VIS5D_VSTREAM
+mode - one of
+VIS5D_OFF= turn off
+VIS5D_ON = turn on,
+VIS5D_TOGGLE = toggle current
+VIS5D_GET = just return value
+Return 1 if graphic is finally displayed or 0 if not displayed.
+int vis5d_enable_sfc_graphics(int ctx_index, int type, int number, int mode)
+Specify which surface graphical elements are to be displayed.
+type - one of
+VIS5D_HSLICE = horizontal contour slice
+VIS5D_HWIND = horizontal wind slice
+VIS5D_HSTREAM = horizontal streamline slice
+VIS5D_MAP = map
+number -
+variable number, if type = VIS5D_HSLICE
+slice number, if type = VIS5D_HWIND, VIS5D_HSTREAM
+0, if VIS5D_MAP
+mode - one of
+VIS5D_OFF= turn off
+VIS5D_ON = turn on,
+VIS5D_TOGGLE = toggle current
+VIS5D_GET = just return value
+Return 1 if graphic is finally displayed or 0 if not displayed.
+int vis5d_check_volume( int ctx_index, int *volflag )
+Determine if 3-D volume rendering is available.
+volflag - returns 1 if volume rendering is available, 0 otherwise
+int vis5d_set_volume( int dtx_index, int current_volume_owner, int current_volume )
+current_volume specifies which volume to display or -1 which indicates no volume is to be displayed. current_volume_owner specifies the data context index where the var belongs
+int vis5d_get_volume( int dtx_index, int *current_volume_owner, int *current_volume )
+current_volume returns the number of the variable which is currently being displayed as a volume or -1 if no volume is being displayed. current_volume_owner returns the data context index where the var belongs
+int vis5d_set_color( int dtx_index, int type, int number, float red, float green, float blue, float alpha )
+Set the color of a Vis5D graphic such as an isosurface, slice or trajectory.
+type - one of
+VIS5D_ISOSURF = isosurface
+VIS5D_HSLICE = horizontal contour line slice
+VIS5D_VSLICE = vertical contour line slice
+VIS5D_CHSLICE = horizontal colored slice
+VIS5D_CVSLICE = vertical colored slice
+VIS5D_VOLUME = volume renering
+VIS5D_TRAJ = wind trajectory set
+VIS5D_HWIND = horizontal wind slice
+VIS5D_VWIND = vertical wind slice
+VIS5D_HSTREAM = horizontal streamline slice
+VIS5D_VSTREAM = vertical streamline slice
+VIS5D_BOX = 3-D box
+VIS5D_BACKGROUND = window background color
+VIS5D_LABEL = color of text labels
+number -
+variable number, if type = VIS5D_ISOSURF, VIS5D_HSLICE, VIS5D_VSLICE,VIS5D_CHSLICE or VIS5D_CVSLICE **** NOTE ***** variable number is in the range [0...VIS5D_MAX_CONTEXTS*MAXVARS] so for example to set the color of the var number 5 from data context index number 2, number would be (2*MAXVARS+5).
+trajectory set if type = VIS5D_TRAJ
+slice number if type = VIS5D_HWIND, VIS5D_VWIND, VIS5D_HSTREAM or VIS5D_VSTREAM
+red, green, blue, alpha - the color components as floating point numbers in the interval [0,1]
+int vis5d_get_color( int dtx_index, int type, int number, float *red, float *green, float *blue, float *alpha )
+Returns the color of a Vis5D graphic such as an isosurface, slice or trajectory.
+type - one of
+VIS5D_ISOSURF = isosurface
+VIS5D_HSLICE = horizontal contour line slice
+VIS5D_VSLICE = vertical contour line slice
+VIS5D_CHSLICE = horizontal colored slice
+VIS5D_CVSLICE = vertical colored slice
+VIS5D_VOLUME = volume renering
+VIS5D_TRAJ = wind trajectory set
+VIS5D_HWIND = horizontal wind slice
+VIS5D_VWIND = vertical wind slice
+VIS5D_HSTREAM = horizontal streamline slice
+VIS5D_VSTREAM = vertical streamline slice
+VIS5D_BOX = 3-D box
+VIS5D_BACKGROUND = window background color
+VIS5D_LABEL = color of text labels
+number -
+variable number, if type = VIS5D_ISOSURF, VIS5D_HSLICE, VIS5D_VSLICE,VIS5D_CHSLICE or VIS5D_CVSLICE **** NOTE ***** variable number is in the range [0...VIS5D_MAX_CONTEXTS*MAXVARS] so for example to set the color of the var number 5 from data context index number 2, number would be (2*MAXVARS+5).
+trajectory set if type = VIS5D_TRAJ
+slice number if type = VIS5D_HWIND, VIS5D_VWIND, VIS5D_HSTREAM or VIS5D_VSTREAM
+red, green, blue, alpha - returns the color components as floating point numbers in the interval [0,1]
+int vis5d_set_cursor_color( int dtx_index, int traj_set )
+The color of the 3-D cursor is always the same as one of the trajectory sets. This function is used to specify which trajectory set the cursor color should track.
+int vis5d_alpha_mode( int dtx_index, int mode )
+Specify how semi-transparent surfaces are to be rendered. If mode equals zero then use the "screendoor" technique, otherwise use alpha blending.
+int vis5d_font( int dtx_index, char *fontname, int size)
+Specify the font to use in the graphics window. The fontname is either an X font or an IRIS GL Font Manager font name depending on what graphics library is being used. The size argument is only used in the later case.
+int vis5d_linewidth( int dtx_index, int width )
+Specify the width, in pixels, of line segments.
+int vis5d_resize_contour_font( ctx_index, int sizefactorx, int sizefactory)
+Increase the width/height size of the contour numbers by a factor of 'sizefactorx', and 'sizefactory'. Default value of 'sizefactorx'and 'sizefactory' is 0.
+int vis5d_gl_setup( int dtx_index, long win_id, int width, int height )
+Prepare the context for a subsequent rendering by providing information about the window in which to render. (This allows an application to render a context into several co-existing windows, for example.)
+Color Table Functions
+A Vis5D color table is a 256-entry table of 4-byte unsigned integers. Each integer is a packed RGBA value. There are 5 sets of color tables for:
+horizontal colored slices (VIS5D_CHSLICE)
+vertical colored slices (VIS5D_CVSLICE)
+isosurface coloring (VIS5D_ISOSURFACE)
+trajectory coloring (VIS5D_TRAJ)
+topography coloring (VIS5D_TOPO)
+In each case, there is a color table for every physical variable. For VIS5D_TOPO there is an additional color table, the default, indexed by -1, which maps topography height values to colors.
+Associated with each color table is a set of four floating point parameters. These parameters control the "shape" of the curves which describe the red, green, blue, and transparency components of colors in the table.
+
+The first three parameters are:
+
+curvature of the rgb curves, default is 1.4
+bias (offset) of RGB curves, default is 1.0
+alpha power, curvature of the transparency curve, default is 2.0
+A color table can be defined either by obtaining the address of the table (via vis5d_get_color_table_address) and storing arbitrary values into the table, or by calling vis5d_set_color_table_params followed by vis5d_color_table_recompute.
+
+The last (255th) element of each color table is special. It defines the color used when drawing missing data. Usually this is black. One exception is the topography height color table (index -1) in which the 255th element of the table is the color to use for drawing water, usually blue.
+
+int vis5d_get_color_table_address( int dtx_index, int type, int varowner, int number, unsigned int **colors )
+Returns the address of a color lookup table for an isosurface, colored slice, volume, or the topography.
+type - one of VIS5D_ISOSURFACE, VIS5D_CHSLICE, VIS5D_CVSLICE, VIS5D_VOLUME, or VIS5D_TOPO.
+varowner - the data context index of the variable.
+number - the variable number of the color table.
+colors - returns the address of the color table.
+int vis5d_get_color_table_params( int dtx_index, int type, int varowner, int number, unsigned int **params )
+Returns the address of the parameters for color lookup table.
+type - one of VIS5D_ISOSURFACE, VIS5D_CHSLICE, VIS5D_CVSLICE, VIS5D_VOLUME, VIS5D_TRAJ or VIS5D_TOPO.
+varowner - the data context index of the variable.
+number - the variable number. If type==VIS5D_TOPO and number==-1 then return the topography height color table parameters address.
+params - returns the address of the param array.
+int vis5d_set_color_table_params( int index, int type, int number, unsigned int params[] )
+Sets the parameters for a color lookup table.
+type - one of VIS5D_ISOSURFACE, VIS5D_CHSLICE, VIS5D_CVSLICE, VIS5D_VOLUME, VIS5D_TRAJ or VIS5D_TOPO.
+number - the variable number. If type==VIS5D_TOPO and number==-1 then set the topography height color table parameters.
+params - the array of parameters
+int vis5d_color_table_init_params( float params[], int rgb_flag, int alpha_flag )
+Reset the color table parameters to their default values.
+params - array of parameters
+rgb_flag - if non-zero, initialize the RGB parameters
+alpha_flag - if non-zero, initialize the alpha/transparency parameters
+int vis5d_color_table_recompute( unsigned int table[], int size, float params[], int rgb_flag, int alpha_flag )
+Recompute all colortable entries from the current parameters.
+table - table of RGBA values to set.
+size - size of table.
+params - array of curve parameters.
+rgb_flag - flag to set RGB values.
+alpha_flag - flag to set alpha values.
+int vis5d_color_table_set_alpha( float params[], float alpha )
+Set transparency values to constant value alpha, or to default curve if alpha<0 for a whole color table.
+3-D View Functions
+int vis5d_set_matrix( int dtx_index, float ctm[4][4] )
+Set the current 3-D transformation matrix.
+int vis5d_get_matrix( int dtx_index, float ctm[4][4] )
+Returns the current 3-D transformation matrix.
+int vis5d_set_ortho_view( int dtx_index, int view )
+Set the current 3-D transformation matrix to view from a north, south, east, west, top, or bottom vantage point.
+view - one of VIS5D_NORTH, VIS5D_SOUTH, VIS5D_EAST, VIS5D_WEST, VIS5D_TOP, or VIS5D_BOTTOM.
+int vis5d_set_view( int dtx_index, float xrot, float yrot, float zrot, float scale, float xtrans, float ytrans, float ztrans )
+Set the current 3-D transformation matrix with rotation, scale, and translation values.
+xrot - rotation about the X axis in degrees
+yrot - rotation about the Y axis in degrees
+zrot - rotation about the Z axis in degrees
+scale - scale factor
+xtrans - translation along the X axis
+ytrans - translation along the Y axis
+ztrans - translation along the Z axis
+int vis5d_get_view( int dtx_index,float *xrot, float *yrot, float *zrot, float *scale, float *xtrans, float *ytrans, float *ztrans )
+Get the current 3-D transformation matrix with rotation, scale, and translation values.
+int vis5d_set_view_scales( int dtx_index, float scalex, float scaley, float scalez)
+Set the current 3-D transformation matrix scale factors.
+scalex - scale factor for the X axis
+scaley - scale factor for the Y axis
+scalez - scale factor for the Z axis
+int vis5d_get_view_scales( int dtx_index, float *scalex, float *scaley, float *scalez)
+Get the current 3-D transformation matrix scale factors.
+int vis5d_set_vert_exaggeration( int dtx_index, float scalez)
+Set the Z axis scale factor for the current 3-D transformation matrix.
+scalez - scale factor for the Z axis
+int vis5d_get_vert_exaggeration( int dtx_index, float *scalez)
+Get the Z axis scale factor for the current 3-D transformation matrix.
+int vis5d_set_camera( int dtx_index, int perspective, float frontclip, float zoom)
+Setup the parameters of the imaginary camera.
+perspective - 0=orthographic projection, non-zero=perspective
+frontclip - position of front clipping plane: 0=no clipping, 1=all clipped
+zoom - zoom (scale) factor, 1.0 is normal
+int vis5d_get_camera( int dtx_index, int perspective, float frontclip, float zoom)
+Returns the parameters of the imaginary camera.
+Make and Control Isosurface, Slices, Trajectories, etc.
+int vis5d_make_isosurface( int ctx_index, int time, int var, int urgent )
+Compute a time sequence of isosurfaces using the current isolevel.
+var - which variable
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_isosurface( int ctx_index, int var, float isolevel )
+Set the current isolevel for a variable. The isolevel controls isosurface generation.
+int vis5d_get_isosurface( int ctx_index, int var, float *isolevel )
+Returns the current isolevel for a variable.
+int vis5d_set_isosurface_color_var( int ctx_index, int iso_var, int colorvarowner, int colorvar )
+Specifies which variable is to be used to color and isosurface. A colored isosurface is one which, instead of being mono-color, is colored per-vertex by another variable according to a colormap.
+iso_var - which isosurface to color
+color_var_owner - which data context index the variable belongs to.
+color_var - which variable to color the surface with, if -1 then use mono-coloring.
+int vis5d_get_isosurface_color_var( int ctx_index, int iso_var, int *colorvarowner, int *colorvar )
+Returns the number of the variable used to color an isosurface.
+iso_var - which isosurface to query
+colorvarowner - return which data context index the variable belongs to.
+colorvar - returns the number of the variable used to color the isosurface or -1 if mono-coloring.
+int vis5d_make_hslice( int ctx_index, int time, int var, int urgent )
+Compute a time sequence of horizontal contour line slice at the current slice position.
+var - which variable
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_hslice( int ctx_index, int var, float interval, float low, float high, float level )
+Set the current position and parameters of a horizontal contour line slice.
+var - which variable
+interval - isoline spacing
+low, high - range of values to contour
+level - grid level position of slice
+int vis5d_get_hslice( int ctx_index, int var, float *interval, float *low, float *high, float *level )
+Returns the current position and parameters of a horizontal contour line slice.
+var - which variable
+interval - isoline spacing
+low, high - range of values to contour
+level - grid level position of slice
+int vis5d_make_vslice( int index, int time, int var, int urgent )
+Compute a time sequence of vertical contour line slice at the current slice position.
+var - which variable
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_vslice( int ctx_index, int var, float interval, float low, float high, float row0, float col0, float row1, float col1)
+Set current position and parameters of a vertical contour line slice. interval - isoline spacing
+low, high - range of values to contour
+row0, col0 - grid row and column position of left side of slice
+row1, co1 - grid row and column position of right side of slice
+int vis5d_get_vslice( int ctx_index, int var, float *interval, float *low, float *high, float *row0, float *col0, float *row1, float *col1 )
+Returns current position and parameters of a vertical contour line slice.
+interval - isoline spacing
+low, high - range of values to contour
+row0, col0 - grid row and column position of left side of slice
+row1, co1 - grid row and column position of right side of slice
+int vis5d_make_chslice( int ctx_index, int time, int var, int urgent )
+Compute a time sequence of horizontal color slice at the current slice position.
+var - which variable
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_chslice( int ctx_index, int var, float level )
+Set the current position of a horizontal color slice.
+var - which variable
+level - grid level position of slice
+int vis5d_get_chslice( int ctx_index, int var, float *level )
+Returns the current position of a horizontal color slice.
+var - which variable
+level - grid level position of slice
+int vis5d_make_cvslice( int ctx_index, int time, int var, int urgent )
+Compute a time sequence of vertical colored slices at the current slice position.
+var - which variable
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_cvslice( int ctx_index, int var, float row0, float col0, float row1, float col1 )
+Set the current position for a vertical colored slice.
+var - which variable
+row0, col0 - grid row and column position of left side of slice
+row1, co1 - grid row and column position of right side of slice
+int vis5d_get_cvslice( int ctx_index, int var, float *row0, float *col0, float row1, float *col1 )
+Returns the current position for a vertical colored slice.
+var - which variable
+row0, col0 - grid row and column position of left side of slice
+row1, co1 - grid row and column position of right side of slice
+int vis5d_make_hwindslice( int dtx_index, int time, int slice, int urgent )
+Compute a time sequence of horizontal wind vector slices at the current slice position.
+slice - which horizontal wind slice (0 or 1)
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_hwindslice( int dtx_index, int slice, float density, float scale, float level )
+Set the current position of a horizontal wind vector slice.
+slice - which wind slice (0 or 1)
+density - density of vectors: 1 = default, .5 = half as many, etc
+scale - wind vector length scale, default is 1.0
+level - grid level position of slice
+int vis5d_get_hwindslice( int dtx_index, int slice, float *density, float *scale, float *level )
+Returns current position and parameters of a horizontal wind vector slice:
+slice - which slice
+density - returns wind vector density
+scale - returns wind vector length scale factor
+level - returns position of slice as a grid level
+int vis5d_make_vwindslice( int dtx_index, int time, int slice, int urgent )
+Compute a time sequence of vertical wind vector slices at the current slice position.
+slice - which vertical wind slice (0 or 1)
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_vwindslice( int dtx_index, int slice, float density, float scale, float row0, float col0, float row1, float col1 )
+Set the current position and parameters for a vertical wind vector slice.
+slice - which wind slice, 0 or 1
+density - wind vector density: 1 = default, .5 = half as many
+scale - wind vector scaling factor, default is 1.0
+row0, col0 - grid row and column position of left side of slice
+row1, co1 - grid row and column position of right side of slice
+int vis5d_get_vwindslice( int dtx_index, int slice ,float *density, float *scale, float *row0, float *col0, float *row1, float *col1 )
+Get the current position and parameters for a vertical wind vector slice.
+slice - which wind slice, 0 or 1
+density - returns wind vector density: 1 = default, .5 = half as many
+scale - returns wind vector scaling factor, default is 1.0
+row0, col0 - returns grid row and column position of left side of slice
+row1, co1 - returns grid row and column position of right side of slice
+int vis5d_make_hstreamslice( int dtx_index, int time, int slice, int urgent )
+Compute a time sequence of horizontal streamline slices at the current slice position.
+slice - which horizontal streamline slice (0 or 1)
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_hstreamslice( int dtx_index, int slice, float density, float level )
+Set the current position of a horizontal streamline slice.
+slice - which streamline slice (0 or 1)
+density - density of streamlines: 1 = default, .5 = half as many, etc
+level - grid level position of slice
+int vis5d_get_hstreamslice( int dtx_index, int slice, float *density, float *level )
+Returns current position and parameters of a horizontal streamline slice:
+slice - which slice
+density - returns streamline density
+level - returns position of slice as a grid level
+int vis5d_make_vstreamslice( int dtx_index, int time, int slice, int urgent )
+Compute a time sequence of vertcal streamline slices at the current slice position.
+slice - which vertcal streamline slice (0 or 1)
+time - which timestep to compute
+urgent - 1 = put request at head of queue, 0 = put at back of queue
+int vis5d_set_vstreamslice( int dtx_index, int slice, float density, float row0, float col0, float row1, float col1 )
+Set the current position of a vertcal streamline slice.
+slice - which streamline slice (0 or 1)
+density - density of streamlines: 1 = default, .5 = half as many, etc
+row0, col0 - grid row and column position of left side of slice
+row1, co1 - grid row and column position of right side of slice
+int vis5d_get_vstreamslice( int dtx_index, int slice, float *density, float *row0, float *col0, float *row1, float *col1 )
+Returns current position and parameters of a vertcal streamline slice:
+slice - which slice
+density - returns streamline density
+row0, col0 - returns grid row and column position of left side of slice
+row1, co1 - returns grid row and column position of right side of slice
+int vis5d_print_traj( int dtx_index, int traj_num, float lat[], float lon[], float hgt[], float traj_value[])
+Returns the tail position of the trajectory given by 'traj_num'. If a variable is mapped to the trajectory the value of the variable is also given in traj_value. The arrays will have length [0..NumTimes-1].
+int vis5d_make_traj( int dtx_index, float row, float col, float lev, int time, int set )
+Compute a wind trajectory. Strictly speaking, a request for a trajectory is put into the work queue.
+row, col, level - position in grid coordinates
+time - timestep number
+set - trajectory set number
+int vis5d_set_traj( int dtx_index, float step, float length, int ribbon_flag )
+Set trajectory computation parameters:
+step - integration step size. 1.0 is normal. Use a smaller value for finer integration, a larger value for coarser integration.
+length - trajectory length value. 1.0 is normal. Use a smaller value for shorter trajectories, a larger value for longer trajectories.
+ribbon_flag - if non-zero, make ribbons, else make line segment trajectories
+int vis5d_get_traj( int dtx_index, float *step, float *length, int *ribbon_flag )
+Get trajectory computation parameters:
+step - returns integration step size UNITS???????
+length - returns trajectory length value UNITS??????
+ribbon_flag - return 1 for ribbons, 0 for line segment trajectories
+int vis5d_set_trajectory_color_var( int index, int traj_set, int colorvarowner, int colorvar )
+Specifies which variable is to be used to color trajectories. A colored trajectory is, instead of being mono-colored, colored per-vertex by another variable according to a colormap. Current trajectories belonging to the set will be recolored.
+traj_set - which trajectory set to color
+color_var_owner - which data context index belongs to the color_var
+color_var - which variable to color the trajectory with, if -1 then use mono-coloring.
+int vis5d_get_trajectory_color_var( int index, int traj_set, int *colorvarowner, int *colorvar )
+Returns the number of the variable used to color a trajectory set.
+traj_set - which trajectory set
+colorvarowner - returns the data context index where color var belongs
+colorvar - returns the number of the variable used to color the trajectory or -1 if mono-coloring.
+int vis5d_delete_last_traj( int dtx_index )
+Delete the last trajectory made.
+int vis5d_delete_traj_set( int dtx_index, int set )
+Delete a set of trajectories.
+int vis5d_reset_var_graphics( int ctx_index, int var )
+Reset the position and parameters of all graphics which correspond to the given variable.
+int vis5d_make_timestep_graphics( int dtx_index, int time )
+Recompute all displayed graphics (except trajectories) for a time step
+time - which timestep to recompute the graphics for
+int vis5d_free_graphics( int ctx_index )
+Delete all graphics from memory. This can be useful when memory is nearly exhausted or very fragmented.
+Text Labels
+int vis5d_make_label( int dtx_index, int x, int y, char *text )
+Make a complete text label at window coordinate (x,y). This function is used for creating text labels non-interactivly.
+int vis5d_new_label( int dtx_index, int x, int y, int *label_id )
+Start making a new text label at window coordinate (x,y). The label_id will return a unique identifier for this label as accepted by the functions below. This function is used for interactivly creating a text label. This label is now considered the current label for editing, etc.
+int vis5d_edit_label( int dtx_index, char chr )
+Append chr onto the current text label (see vis5d_new_label). If chr is a backspace or delete character, the last character in the label will be deleted.
+int vis5d_find_label( int dtx_index, int x, int y, int *label_id )
+Determine which text label is nearest to window coordinate (x,y) and return its unique identification number in label_id.
+int vis5d_move_label( int dtx_index, int label_id, int x, int y )
+Move the text label identified by label_id to the new window position (x,y).
+int vis5d_delete_label( int dtx_index, int label_id )
+Delete the text label identified by label_id.
+3-D Cursor Functions
+int vis5d_set_cursor( int dtx_index, float x, float y, float z )
+Set the cursor position. (x,y,z) is in graphics space.
+int vis5d_get_cursor( int dtx_index, float *x, float *y, float *z )
+Returns the cursor's position as (x,y,z) in graphics space.
+3-D Color Legend Function
+int vis5d_set_legends( int dtx_index, int position, int size )
+Set the position and size for color legends.
+position - one of VIS5D_BOTTOM (default), VIS5D_TOP, VIS5D_RIGHT or VIS5D_LEFT
+size - height of legend between 10 and 1000 (default = 128)
+int vis5d_set_logo_size( int dtx_index, int factor )
+Reduce the size of the 'Vis5D' logo by factor.
+3-D Viewing Window Functions
+int vis5d_get_window( int dtx_index, Window *window, int *width, int *height )
+Return the X window ID of the display context's graphics window. Also return the window size in pixels.
+int vis5d_resize_BIG_window( int width, int height )
+Call this function when the size of the BIG 3-D window changes.
+int vis5d_moveresize_BIG_window( int x, int y, int width, int height)
+Call this function to resize and move the BIG window.
+int vis5d_resize_3d_window( int dtx_index, int width, int height )
+Call this function when the size of the 3-D window changes.
+int vis5d_moveresize_3d_window( int dtx_index, int x, int y, int width, int height )
+Call this function to resize and move the dispaly context's graphics window.
+int vis5d_resize_sounding_window( int dtx_index, int width, int height, int x, int y )
+Call this function when the size or location of the sounding window changes.
+int vis5d_get_image_formats( int *formats )
+Returns a bitmask indicating which image file formats are supported by the vis5d_save_window function. Formats supported may be the bitwise-OR of zero or more of: VIS5D_XWD, VIS5D_GIF, VIS5D_RGB, VIS5D_POSTSCRIPT, or VIS5D_COLOR_POSTSCRIPT
+int vis5d_save_window( int dtx_index, char *filename, int format )
+Save the current 3-D image as an image file.
+filename - name of file to write
+format - one of VIS5D_XWD, VIS5D_GIF, VIS5D_RGB, VIS5D_POSTSCRIPT, or VIS5D_COLOR_POSTSCRIPT
+int vis5d_save_snd_window( int dtx_index, char *filename, int format )
+Save the current soudning window as an image file.
+filename - name of file to write
+format - one of VIS5D_XWD, VIS5D_GIF, VIS5D_RGB, VIS5D_POSTSCRIPT, or VIS5D_COLOR_POSTSCRIPT
+int vis5d_print_window( int dtx_index )
+Send the display 3-D window image to the default printer. The printer must support PostScript.
+int vis5d_print_snd_window( int dtx_index )
+Send the sounding window image to the default printer. The printer must support PostScript.
+Coordinate Conversion
+int vis5d_project( int dtx_index, float p[3], float *winx, float *winy )
+Project a point in 3-D graphics coordinates to 2-D window coordinates.
+p - the point in graphics space
+winx, winy - returns the projected point in window coordinates, in pixels, where (0,0) is the upper-left corner of the window.
+int vis5d_unproject( int dtx_index, float winx, float winy, float point[3], float dir[3] )
+"Unproject" a point from 2-D window coordinates to a parametric line in graphics space.
+winx, winy - the window coordinate, in pixels, where (0,0) is the upper-left corner of the window.
+point, dir - parametric equation of corresponding line in graphics space: line = point + T*dir
+int vis5d_xyz_to_grid( int ctx_index, int time, int var, float x, float y, float z, float *row, float *column, float *level )
+Convert a coordinate from data graphics space to data grid space. The timestep and variable are needed in case of a projection which is dependent on timestep and/or variable.
+int vis5d_xyzPRIME_to_gridPRIME(int dtx_index, int time, int var, float x, float y, float z,float *row, float *col, float *lev )
+Convert a coordinate from virtual graphics space to virtual grid space.
+int vis5d_gridPRIME_to_xyzPRIME( int dtx_index, int time, int var, float row, float col, float lev, float *x, float *y, float *z )
+Convert a coordinate from virtual grid space to virtual graphics space.
+int vis5d_gridPRIME_to_grid( int ctx_index, int time, int var, float rPRIME, float cPRIME, float lPRIME, float *r, float *c, float *l)
+Convert a coordinate from virtual grid space to data grid space.
+int vis5d_grid_to_gridPRIME( int ctx_index, int time, int var, float r, float c, float l, float *rPRIME, float *cPRIME, float *lPRIME)
+Convert a coordinate from data grid space to virtual grid space.
+int vis5d_grid_to_xyz( int ctx_index, int time, int var, float row, float column, float level, float *x, float *y, float *z )
+Convert a coordinate from data grid space to data graphics space. The timestep and variable are needed in case of a projection which is dependent on timestep and/or variable.
+int vis5d_xyzPRIME_to_geo( int dtx_index, int time, int var, float x, float y, float z, float *lat, float *lon, float *hgt )
+Convert a coordinate from virtual graphics space to geographic space.
+int vis5d_geo_to_xyzPRIME( int dtx_index, int time, int var, float lat, float lon, float hgt, float *x, float *y, float *z)
+Convert a coordinate from geographic space to virtual graphics space.
+int vis5d_xyz_to_geo( int ctx_index, int time, int var, float x, float y, float z, float *lat, float *lon, float *hgt )
+Convert a coordinate from data graphics space to geographic space. The timestep and variable are needed in case of a projection which is dependent on timestep and/or variable.
+int vis5d_rowcol_to_latlon( int ctx_index, int time, int var, float row, float col, float *lat, float *lon)
+Convert a row and column in data grid space to lat and lon.
+int vis5d_rowcolPRIME_to_latlon( int dtx_index, int time, int var, float row, float col, float *lat, float *lon)
+Convert a row and column in virtual grid space to lat and lon.
+int vis5d_grid_to_geo ( int ctx_index, int time, int var, float row, float col, float lev, float *lat, float *lon, float *hgt)
+Convert a coordinate from data grid space to geographic space.
+int vis5d_gridPRIME_to_geo ( int dtx_index, int time, int var, float row, float col, float lev, float *lat, float *lon, float *hgt)
+Convert a coordinate from virtual grid space to geographic space.
+int vis5d_latlon_to_rowcol( int ctx_index, int time, int var, float lat, float lon, float *row, float *col)
+Convert a lat and lon to row and column in data grid space.
+int vis5d_latlon_to_rowcolPRIME( int dtx_index, int time, int var, float lat, float lon, float *row, float *col)
+Convert a lat and lon to row and column in virtual grid space.
+int vis5d_geo_to_grid( int ctx_index, int time, int var, float lat, float lon, float hgt, float *row, float *col, float *lev)
+Convert a coordinate from geographic space to data grid space.
+int vis5d_geo_to_grid( int dtx_index, int time, int var, float lat, float lon, float hgt, float *row, float *col, float *lev)
+Convert a coordinate from geographic space to virtual grid space.
+int vis5d_geo_to_xyz( int ctx_index, int time, int var, float lat, float lon, float hgt, float *x, float *y, float *z )
+Convert a coordinate from data graphics space to geographic space. The timestep and variable are needed in case of a projection which is dependent on timestep and/or variable.
+Miscellaneous Functions
+int vis5d_set_busy_cursor( Display *dpy, Window win, int busy)
+This changes the status of the window cursor bewteen an arrow and a watch.
+dpy - the display
+win - the window
+busy - if 0 then use arrow cursor, if 1 then use watch cursor
+Recently removed functions
+int vis5d_init_trajvars( int index, char *uname, char *vname, char *wname )
+Functionality replaced by vis5d_set_wind_vars().
+int vis5d_init_wind2( int index, char *u2name, char *v2name, char *w2name )
+Functionality replaced by vis5d_set_wind_vars().
+int vis5d_get_graphics_color_address( int index, int type, int number, unsigned int **color)
+Replaced by the simpler vis5d_set_color() and vis5d_get_color() functions.
+vis5d_get_expression( int index, int var, char *expression )
+Replaced by vis5d_get_var_info() function.
+int vis5d_set_frontclip( int index, float position )
+Replaced by vis5d_set_camera().
+int vis5d_set/get_zoom()
+Replaced by vis5d_set/get_camera().
+Save and Restore
+int vis5d_save( int index, int gfx, int traj )
+Replaced by tcl_save().
+int vis5d_restore( int index, char *filename )
+Replaced by execute_script().

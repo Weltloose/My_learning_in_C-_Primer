@@ -43,4 +43,83 @@ Chapter 10. Generic Algorithms
 	6. Container-Specific Algorithms
 
 Chapter 11. Associative Containers
-	1. Using an Associative Container
+	1. Using an Associative Container e.g. using_associative_container.cpp
+	using_multimap.cpp
+	3. Operations on Associative containers
+		!the value_type of a map is a pair and C++ Primer, Fifth Edition that we can change the value but not the key member of that pair.
+		!Using find Instead of Subscript for maps: using a subscript has an important side effect: If that key is not already in the map, then subscript inserts an element with that key.
+		!using lower_bound and upper_bound. If the key is in the container, the iterator returned from lower_bound will refer to the first instance of that key and the iterator returned by upper_bound will refer just after the last instance of the key.
+	4. The Unordered Containers
+
+!!Chapter 12. Dynamic Memory
+	1. Dynamic Memory and Smart Pointers
+		!!!!usage of shared_ptr: e.g. usage_of_shared_ptr.cpp
+		!!usage of initializer_list, for unknown num of arguments. e.g. usage_of_initializer_list.cpp
+		!use shared_ptr in class: e.g. using_shared_ptr_in_class.cpp
+		By default, if new is unable to allocate the requested storage, it throws an exception of type bad_alloc We can prevent new from throwing an exception by using<---int *p2 = new (nothrow) int--->If this form of new is unable to allocate the requested storage, it will return a null pointer. defined in the new header.
+		!!Use get only to pass access to the pointer to code that you know will not delete the pointer. In particular, never use get to initialize or assign to another smart pointer.
+		!!usage of unique_ptr. e.g. using_unique_ptr.cpp;
+		!usage of weak_ptr. e.g. using_weak_ptr.cpp
+		!!!!!!!!!!!!!!!!!!当一个类的某个函数需要使用另一个类的内容时，记住这个函数的完整定义要在定义完另一个类以后才打. e.g. using_weak_ptr.cpp line 33 and 53.
+	2. Dynamic Arrays
+		!!!!It is important to remember that what we call a dynamic array does not have an array type. So we cann't use begin or end or range for. e.g. error_using_dynamic_array.cpp
+		!!!By default, objects allocated by new—whether allocated as a single object or in an array—are default initialized.
+		!When a unique_ptr points to an array, we cannot use the dot and arrow member access operators. On the other hand, when a unqiue_ptr points to an array, we can use the subscript operator to access the elements in the array.e.g. using_unique_ptr_pointing_darray.cpp
+		!If we want to use a shared_ptr to manage a dynamic array, we must provide our own deleter. e.g. using_shared_ptr_pointing_darray.cpp
+		!using allocator class to alloc dynamic array elements of whitch are not constructed. e.g. using_allocator_class.cpp
+	3. Using the Library: A Text-Query Program
+		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!A very tiny way of combining map, set, sstring, fstring. TEXT_QUERY.cpp
+
+Chapter 13. Copy Control
+		!!explicit can prevent type transform 
+		!The = delete signals to the compiler that we are intentionally not defining these members.
+		!use = default only on the default constructor or a copy-control member that the compiler can synthesize
+	2. Copy Control and Resource Management
+		!using own defined referennce count to implement pointer class. e.g. pointer_class.cpp
+		!defining our own swap in class; e.g. swap_in_class.cpp
+	4. A Copy-Control Example
+	5. Classes That Manage Dynamic Memory
+		!!!using rvalue reference and move to directly move data from here to there.
+		!!using allocator class to create a string vector. e.g. allocator_string_vector.cpp
+	6. Moving Objects
+
+Chapter 14. Overloaded Operations and Conversions
+	1. Basic Concepts
+		!!!!!!!!!!If we want to provide similar mixed-type expressions involving class objects, then the operator must be defined as a nonmember function. e.g. overload_plus.cpp
+	2. Input and Output Operators	
+		IO Operators Must Be Nonmember Functions
+	3. Arithmetic and Relational Operators
+		it is better for this class not to define < at all.
+	4. Assignment Operators
+	5. Subscript Operator
+		it is usually a good idea to define both const and nonconst versions of this operator
+	6. Increment and Decrement Operators
+		e.g. overload_inc_op.cpp
+	7. Member Access Operators
+		e.g. overload_def_op.cpp
+	8. Function-Call Operator
+		e.g. function_call_op.cpp
+		e.g. library_function_obj.cpp
+	9. Overloading, Conversions, and Operators
+		e.g. class_conversion.cpp
+Chapter 15. Object-Oriented Programming
+	1. OOP: An Overview
+	2. Defining Base and Derived Classes
+		A class must be defined, not just declared, before we can use it as a base class
+		we can prevent a class from being used as a base by following the class name with final
+	3. Virtual Functions
+		!!virtual functions must always be defined
+	4. Abstract Base Classes
+	5. Access Control and Inheritance
+		!!A derived class member or friend may access the 	protected members of the base class only through a derived object.
+	6. Class Scope under Inheritance
+		A derived-class member with the same name as a member of the base class hides direct use of the base-class member.
+	7. Constructors and Copy Control
+		Executing delete on a pointer to base that points to a derived object has undefined behavior if the base’s destructor is not virtual.
+		simple_oo.cpp
+	8. Containers and Inheritance
+
+
+Chapter 17. Specialized Library Facilities
+	1. The tuple Type
+		e.g. simple_usage_of_tuple.cpp
