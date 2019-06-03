@@ -17,6 +17,7 @@ int main(){
 	int cindex = 0;
 	for(int i = 1; i < size; i++){
 		index = -1;
+		a[i] = 1;
 		for(int j = 0; j < i; j++){
 			if(array[j] < array[i] && (a[j] + 1) > a[i]){
 				a[i] = a[j] + 1;
